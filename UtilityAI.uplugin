@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "UtilityAI",
+	"Description": "Unreal Engine plugin that implements Utility AI ",
+	"Category": "AI",
+	"CreatedBy": "Creatorama Studio",
+	"CreatedByURL": "https://github.com/CreatoramaStudio/UtilityAI",
+	"DocsURL": "https://github.com/CreatoramaStudio/UtilityAI/wiki",
+	"MarketplaceURL": "",
+	"SupportURL": "https://github.com/CreatoramaStudio/UtilityAI/issues",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "UtilityAI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

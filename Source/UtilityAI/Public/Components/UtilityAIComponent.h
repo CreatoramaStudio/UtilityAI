@@ -7,7 +7,7 @@
 #include "Objects/UtilityAction.h"
 #include "UtilityAIComponent.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectAction, UUtilityAction*, Value);
 
 UCLASS( ClassGroup=(UtilityAI), meta=(BlueprintSpawnableComponent) )
 class UTILITYAI_API UUtilityAIComponent : public UActorComponent
@@ -25,12 +25,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
 		UUtilityAction* CurrentAction;
 
+	UPROPERTY(BlueprintAssignable, Category = "Utility AI")
+		FOnSelectAction OnSelectAction;
+
 protected:
 
 	UPROPERTY()
 		AAIController* AIController;
 
-	bool FinishedDeciding;
+	bool bSelectingAction;
 
 private:
 
@@ -41,14 +44,13 @@ public:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	// Called every frame
-	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void OnRegister() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		bool IsDecidingBestAction();
+		bool IsSelectingAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-	virtual void CalculateBestAction();
+		virtual void SelectBestAction();
 
 protected:
 

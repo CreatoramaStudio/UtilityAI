@@ -56,6 +56,7 @@ public:
 
 	virtual void CreateConsiderations();
 
+	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 	void SetScore(float Value);
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
@@ -67,8 +68,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
 		void Construct();
 
-	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		void ExecuteAction();
+	void ExecuteAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		void FinishAction();

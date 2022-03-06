@@ -82,7 +82,7 @@ void UUtilityAction::FinishAction()
 
 	if (UtilityAIComponent)
 	{
-		UtilityAIComponent->CalculateBestAction();
+		UtilityAIComponent->SelectBestAction();
 	}
 }
 
@@ -94,7 +94,7 @@ void UUtilityAction::CancelAction()
 
 	if (UtilityAIComponent)
 	{
-		UtilityAIComponent->CalculateBestAction();
+		UtilityAIComponent->SelectBestAction();
 	}
 }
 

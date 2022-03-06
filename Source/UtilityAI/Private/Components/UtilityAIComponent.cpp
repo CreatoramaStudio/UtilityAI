@@ -19,20 +19,25 @@ UUtilityAIComponent::UUtilityAIComponent()
 void UUtilityAIComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	CreateActions();
+
+	SelectBestAction();
+}
+
+void UUtilityAIComponent::OnRegister()
+{
+	Super::OnRegister();
 
 	if (GetOwner())
 	{
 		AIController = Cast<AAIController>(GetOwner());
 	}
-	
-	CreateActions();
-
-	CalculateBestAction();
 }
 
-bool UUtilityAIComponent::IsDecidingBestAction()
+bool UUtilityAIComponent::IsSelectingAction()
 {
-	return !FinishedDeciding;
+	return bSelectingAction;
 }
 
 void UUtilityAIComponent::CreateActions()
@@ -43,7 +48,7 @@ void UUtilityAIComponent::CreateActions()
 	{
 		if (ActionType)
 		{
-			UUtilityAction* Action = NewObject<UUtilityAction>(GetOwner(), ActionType);
+			UUtilityAction* Action = NewObject<UUtilityAction>(AIController, ActionType);
 			Actions.Add(Action);
 			Action->InitializeVariables(this, AIController);
 			Action->CreateConsiderations();
@@ -52,9 +57,9 @@ void UUtilityAIComponent::CreateActions()
 	}
 }
 
-void UUtilityAIComponent::CalculateBestAction()
+void UUtilityAIComponent::SelectBestAction()
 {
-	FinishedDeciding = false;
+	bSelectingAction = true;
 
 	if (CurrentAction && CurrentAction->IsExecutingAction())
 	{
@@ -73,20 +78,29 @@ void UUtilityAIComponent::CalculateBestAction()
 		}
 	}
 
-	FinishedDeciding = true;
-
 	CurrentAction = BestAction;
+
+	bSelectingAction = false;
+
+	if (OnSelectAction.IsBound())
+	{
+		OnSelectAction.Broadcast(CurrentAction);
+	}
 
 	if (CurrentAction)
 	{
 		CurrentAction->ExecuteAction();
 	}
-	
 }
 
 float UUtilityAIComponent::ScoreAction(UUtilityAction* Action)
 {
 	float Score = 1;
+
+	if (Action->Considerations.Num() <= 0)
+	{
+		return Action->GetScore();
+	}
 
 	for (auto Consideration : Action->Considerations)
 	{

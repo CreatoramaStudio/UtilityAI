@@ -20,7 +20,7 @@ void UUtilityAIComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CreateActions();
+	CreateDefaultActions();
 
 	SelectBestAction();
 }
@@ -40,20 +40,13 @@ bool UUtilityAIComponent::IsSelectingAction()
 	return bSelectingAction;
 }
 
-void UUtilityAIComponent::CreateActions()
+void UUtilityAIComponent::CreateDefaultActions()
 {
 	Actions.Empty();
 
-	for (auto ActionType : ActionTypes)
+	for (auto ActionType : DefaultActionTypes)
 	{
-		if (ActionType)
-		{
-			UUtilityAction* Action = NewObject<UUtilityAction>(AIController, ActionType);
-			Actions.Add(Action);
-			Action->InitializeVariables(this, AIController);
-			Action->CreateConsiderations();
-			Action->Construct();
-		}
+		AddAction(ActionType);
 	}
 }
 
@@ -91,6 +84,41 @@ void UUtilityAIComponent::SelectBestAction()
 	{
 		CurrentAction->ExecuteAction();
 	}
+}
+
+void UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
+{
+	if (ActionType)
+	{
+		UUtilityAction* Action = NewObject<UUtilityAction>(AIController, ActionType);
+		Actions.Add(Action);
+		Action->InitializeVariables(this, AIController);
+		Action->CreateConsiderations();
+		Action->Construct();
+	}
+}
+
+bool UUtilityAIComponent::RemoveAction(TSubclassOf<UUtilityAction> ActionType)
+{
+	if (CurrentAction->StaticClass() == ActionType)
+	{
+		Actions.Remove(CurrentAction);
+
+		SelectBestAction();
+
+		return true;
+	}
+
+	for (auto Action : Actions)
+	{
+		if (Action->StaticClass() == ActionType)
+		{
+			Actions.Remove(Action);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 float UUtilityAIComponent::ScoreAction(UUtilityAction* Action)

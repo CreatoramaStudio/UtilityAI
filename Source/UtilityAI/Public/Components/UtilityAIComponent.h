@@ -16,9 +16,6 @@ class UTILITYAI_API UUtilityAIComponent : public UActorComponent
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-		TArray<TSubclassOf<UUtilityAction>> ActionTypes;
-
 	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
 		TArray<UUtilityAction*> Actions;
 
@@ -29,6 +26,9 @@ public:
 		FOnSelectAction OnSelectAction;
 
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
+		TArray<TSubclassOf<UUtilityAction>> DefaultActionTypes;
 
 	UPROPERTY()
 		AAIController* AIController;
@@ -52,9 +52,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		virtual void SelectBestAction();
 
+	UFUNCTION(BlueprintCallable, Category = "Utility AI")
+		void AddAction(TSubclassOf<UUtilityAction> ActionType);
+
+	UFUNCTION(BlueprintCallable, Category = "Utility AI")
+		bool RemoveAction(TSubclassOf<UUtilityAction> ActionType);
+
+
 protected:
 
-	virtual void CreateActions();
+	virtual void CreateDefaultActions();
 
 	virtual float ScoreAction(UUtilityAction* Action);
 

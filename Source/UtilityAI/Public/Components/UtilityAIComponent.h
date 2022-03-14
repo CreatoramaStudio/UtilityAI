@@ -25,10 +25,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Utility AI")
 		FOnSelectAction OnSelectAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility AI")
+		bool bRandomActionIfSelectBestActionFails = true;
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-		TArray<TSubclassOf<UUtilityAction>> DefaultActionTypes;
+		TSet<TSubclassOf<UUtilityAction>> DefaultActionTypes;
+
+	UPROPERTY(EditAnywhere, Category = "Utility AI")
+		bool bSelectBestActionOnTick = true;
 
 	UPROPERTY()
 		AAIController* AIController;
@@ -41,16 +47,24 @@ public:
 	// Sets default values for this component's properties
 	UUtilityAIComponent();
 
+	virtual void OnRegister() override;
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	virtual void OnRegister() override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Utility AI")
+		void SetSelectBestActionOnTick(bool Value);
+
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		bool GetSelectBestActionOnTick();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		bool IsSelectingAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		virtual void SelectBestAction();
+		virtual bool SelectBestAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		void AddAction(TSubclassOf<UUtilityAction> ActionType);

@@ -75,14 +75,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		void CancelAction();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
+		bool CanCancelAction();
 	
 protected:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
-		void EnterAction();
+		void StartAction();
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
-		void ExitAction(bool bCanceled);
+		void StopAction(bool bCanceled);
 
 private:
 

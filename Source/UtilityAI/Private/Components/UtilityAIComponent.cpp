@@ -10,10 +10,20 @@ UUtilityAIComponent::UUtilityAIComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 
-	//PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = bSelectBestActionOnTick;
 
 }
 
+
+void UUtilityAIComponent::OnRegister()
+{
+	Super::OnRegister();
+
+	if (GetOwner())
+	{
+		AIController = Cast<AAIController>(GetOwner());
+	}
+}
 
 // Called when the game starts
 void UUtilityAIComponent::BeginPlay()
@@ -25,15 +35,22 @@ void UUtilityAIComponent::BeginPlay()
 	SelectBestAction();
 }
 
-void UUtilityAIComponent::OnRegister()
+void UUtilityAIComponent::SetSelectBestActionOnTick(bool Value)
 {
-	Super::OnRegister();
-
-	if (GetOwner())
-	{
-		AIController = Cast<AAIController>(GetOwner());
-	}
+	bSelectBestActionOnTick = Value;
+	PrimaryComponentTick.bCanEverTick = bSelectBestActionOnTick;
 }
+
+bool UUtilityAIComponent::GetSelectBestActionOnTick()
+{
+	return bSelectBestActionOnTick;
+}
+
+void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	SelectBestAction();
+}
+
 
 bool UUtilityAIComponent::IsSelectingAction()
 {
@@ -50,14 +67,9 @@ void UUtilityAIComponent::CreateDefaultActions()
 	}
 }
 
-void UUtilityAIComponent::SelectBestAction()
+bool UUtilityAIComponent::SelectBestAction()
 {
 	bSelectingAction = true;
-
-	if (CurrentAction && CurrentAction->IsExecutingAction())
-	{
-		CurrentAction->CancelAction();
-	}
 
 	float Score = 0;
 	UUtilityAction* BestAction = nullptr;
@@ -71,9 +83,37 @@ void UUtilityAIComponent::SelectBestAction()
 		}
 	}
 
-	CurrentAction = BestAction;
+	if (CurrentAction && CurrentAction != BestAction && CurrentAction->IsExecutingAction())
+	{
+		if (CurrentAction->CanCancelAction())
+		{
+			CurrentAction->CancelAction();
+		}
+		else
+		{
+			bSelectingAction = false;
+			return false;
+		}
+		
+	}
 
-	bSelectingAction = false;
+	if (BestAction)
+	{
+		CurrentAction = BestAction;
+		bSelectingAction = false;
+	}
+	else if(bRandomActionIfSelectBestActionFails)
+	{
+		CurrentAction = Actions[FMath::RandRange(0, Actions.Num() - 1)];
+		bSelectingAction = false;
+	}
+	else
+	{
+		bSelectingAction = false;
+		return false;
+	}
+	
+	
 
 	if (OnSelectAction.IsBound())
 	{
@@ -84,6 +124,8 @@ void UUtilityAIComponent::SelectBestAction()
 	{
 		CurrentAction->ExecuteAction();
 	}
+
+	return true;
 }
 
 void UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
@@ -100,7 +142,7 @@ void UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
 
 bool UUtilityAIComponent::RemoveAction(TSubclassOf<UUtilityAction> ActionType)
 {
-	if (CurrentAction->StaticClass() == ActionType)
+	if (CurrentAction && CurrentAction->GetClass() == ActionType)
 	{
 		Actions.Remove(CurrentAction);
 
@@ -111,7 +153,7 @@ bool UUtilityAIComponent::RemoveAction(TSubclassOf<UUtilityAction> ActionType)
 
 	for (auto Action : Actions)
 	{
-		if (Action->StaticClass() == ActionType)
+		if (Action->GetClass() == ActionType)
 		{
 			Actions.Remove(Action);
 			return true;

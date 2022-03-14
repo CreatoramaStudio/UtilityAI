@@ -71,39 +71,50 @@ void UUtilityAction::Construct_Implementation()
 void UUtilityAction::ExecuteAction()
 {
 	bExecutingAction = true;
-	EnterAction();
+	StartAction();
 }
 
 void UUtilityAction::FinishAction()
 {
-	ExitAction(false);
-
-	bExecutingAction = false;
-
-	if (UtilityAIComponent)
+	if (bExecutingAction)
 	{
-		UtilityAIComponent->SelectBestAction();
+		StopAction(false);
+
+		bExecutingAction = false;
+
+		if (UtilityAIComponent)
+		{
+			UtilityAIComponent->SelectBestAction();
+		}
 	}
 }
 
 void UUtilityAction::CancelAction()
 {
-	ExitAction(true);
-
-	bExecutingAction = false;
-
-	if (UtilityAIComponent)
+	if (bExecutingAction && CanCancelAction())
 	{
-		UtilityAIComponent->SelectBestAction();
+		StopAction(true);
+
+		bExecutingAction = false;
+
+		if (UtilityAIComponent)
+		{
+			UtilityAIComponent->SelectBestAction();
+		}
 	}
 }
 
-void UUtilityAction::EnterAction_Implementation()
+bool UUtilityAction::CanCancelAction_Implementation()
+{
+	return true;
+}
+
+void UUtilityAction::StartAction_Implementation()
 {
 
 }
 
-void UUtilityAction::ExitAction_Implementation(bool bCanceled)
+void UUtilityAction::StopAction_Implementation(bool bCanceled)
 {
 }
 

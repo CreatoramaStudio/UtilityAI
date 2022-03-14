@@ -67,7 +67,7 @@ public:
 		virtual bool SelectBestAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		void AddAction(TSubclassOf<UUtilityAction> ActionType);
+		bool AddAction(TSubclassOf<UUtilityAction> ActionType);
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		bool RemoveAction(TSubclassOf<UUtilityAction> ActionType);

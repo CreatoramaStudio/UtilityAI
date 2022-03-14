@@ -128,16 +128,28 @@ bool UUtilityAIComponent::SelectBestAction()
 	return true;
 }
 
-void UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
+bool UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
 {
 	if (ActionType)
 	{
+		for (auto Action : Actions)
+		{
+			if (Action->GetClass() == ActionType)
+			{
+				return false;
+			}
+		}
+
 		UUtilityAction* Action = NewObject<UUtilityAction>(AIController, ActionType);
 		Actions.Add(Action);
 		Action->InitializeVariables(this, AIController);
 		Action->CreateConsiderations();
 		Action->Construct();
+
+		return true;
 	}
+
+	return false;
 }
 
 bool UUtilityAIComponent::RemoveAction(TSubclassOf<UUtilityAction> ActionType)

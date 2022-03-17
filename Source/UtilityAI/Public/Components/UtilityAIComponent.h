@@ -7,6 +7,14 @@
 #include "Objects/UtilityAction.h"
 #include "UtilityAIComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EUtilityUpdate : uint8
+{
+	None,
+	Tick,
+	Timer,
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectAction, UUtilityAction*, Value);
 
 UCLASS( ClassGroup=(UtilityAI), meta=(BlueprintSpawnableComponent) )
@@ -16,30 +24,35 @@ class UTILITYAI_API UUtilityAIComponent : public UActorComponent
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
-		TArray<UUtilityAction*> Actions;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
-		UUtilityAction* CurrentAction;
-
 	UPROPERTY(BlueprintAssignable, Category = "Utility AI")
 		FOnSelectAction OnSelectAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility AI")
-		bool bRandomActionIfSelectBestActionFails = true;
-
 protected:
+
+	UPROPERTY()
+		TArray<UUtilityAction*> Actions;
+
+	UPROPERTY()
+		UUtilityAction* CurrentAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
 		TSet<TSubclassOf<UUtilityAction>> DefaultActionTypes;
 
 	UPROPERTY(EditAnywhere, Category = "Utility AI")
-		bool bSelectBestActionOnTick = true;
+		EUtilityUpdate SelectBestActionUpdateType = EUtilityUpdate::Timer;
+
+	UPROPERTY(EditAnywhere, Category = "Utility AI", meta = (EditCondition = "SelectBestActionUpdateType==EUtilityUpdate::Timer", EditConditionHides))
+		float SelectBestActionTimerRate = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility AI")
+		bool bRandomActionIfSelectBestActionFails = true;
 
 	UPROPERTY()
 		AAIController* AIController;
 
 	bool bSelectingAction;
+
+	FTimerHandle TimerHandle;
 
 private:
 
@@ -54,17 +67,23 @@ public:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		void SetSelectBestActionOnTick(bool Value);
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+	TArray<UUtilityAction*> GetActions() const;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		bool GetSelectBestActionOnTick();
+	UUtilityAction* GetCurrentAction() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Utility AI")
+		void SetSelectBestActionUpdateType(EUtilityUpdate Value, float TimerRate = .5f);
+
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		EUtilityUpdate GetSelectBestActionUpdateType();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		bool IsSelectingAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		virtual bool SelectBestAction();
+		virtual void SelectBestAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
 		bool AddAction(TSubclassOf<UUtilityAction> ActionType);

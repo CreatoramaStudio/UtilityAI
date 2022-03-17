@@ -31,14 +31,11 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
+	UPROPERTY()
 		UUtilityAIComponent* UtilityAIComponent;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
+	UPROPERTY()
 		AAIController* AIController;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
-		APawn* Pawn;
 
 	float Score;
 
@@ -57,7 +54,7 @@ public:
 	virtual void CreateConsiderations();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-	void SetScore(float Value);
+		void SetScore(float Value);
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
 		bool IsExecutingAction();
@@ -78,12 +75,22 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
 		bool CanCancelAction();
-	
+
 protected:
+
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		UUtilityAIComponent* GetUtilityAIComponent() const;
+
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		AAIController* GetAIController() const;
+
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		APawn* GetPawn() const;
+
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
 		void StartAction();
-	
+
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
 		void StopAction(bool bCanceled);
 

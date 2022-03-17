@@ -10,7 +10,7 @@ UUtilityAIComponent::UUtilityAIComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 
-	PrimaryComponentTick.bCanEverTick = bSelectBestActionOnTick;
+	PrimaryComponentTick.bCanEverTick = true;
 
 }
 
@@ -32,23 +32,75 @@ void UUtilityAIComponent::BeginPlay()
 	
 	CreateDefaultActions();
 
-	SelectBestAction();
-}
-
-void UUtilityAIComponent::SetSelectBestActionOnTick(bool Value)
-{
-	bSelectBestActionOnTick = Value;
-	PrimaryComponentTick.bCanEverTick = bSelectBestActionOnTick;
-}
-
-bool UUtilityAIComponent::GetSelectBestActionOnTick()
-{
-	return bSelectBestActionOnTick;
+	SetSelectBestActionUpdateType(SelectBestActionUpdateType);
 }
 
 void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	SelectBestAction();
+	if (SelectBestActionUpdateType == EUtilityUpdate::Tick)
+	{
+		SelectBestAction();
+	}
+}
+
+TArray<UUtilityAction*> UUtilityAIComponent::GetActions() const
+{
+	return Actions;
+}
+
+UUtilityAction* UUtilityAIComponent::GetCurrentAction() const
+{
+	return CurrentAction;
+}
+
+void UUtilityAIComponent::SetSelectBestActionUpdateType(EUtilityUpdate Value, float TimerRate)
+{
+	SelectBestActionUpdateType = Value;
+	SelectBestActionTimerRate = TimerRate;
+
+	switch (SelectBestActionUpdateType)
+	{
+	case EUtilityUpdate::None:
+
+		SetComponentTickEnabled(false);
+
+		if (GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
+		{
+			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+		}
+
+		SelectBestAction();
+
+		break;
+	case EUtilityUpdate::Tick:
+
+		if (GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
+		{
+			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+		}
+
+		SetComponentTickEnabled(true);
+		
+		break;
+	case EUtilityUpdate::Timer:
+
+		SetComponentTickEnabled(false);
+
+		if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
+		{
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UUtilityAIComponent::SelectBestAction, SelectBestActionTimerRate, true,0);
+		}
+
+		break;
+	default:
+		break;
+	}
+
+}
+
+EUtilityUpdate UUtilityAIComponent::GetSelectBestActionUpdateType()
+{
+	return SelectBestActionUpdateType;
 }
 
 
@@ -67,7 +119,7 @@ void UUtilityAIComponent::CreateDefaultActions()
 	}
 }
 
-bool UUtilityAIComponent::SelectBestAction()
+void UUtilityAIComponent::SelectBestAction()
 {
 	bSelectingAction = true;
 
@@ -92,7 +144,7 @@ bool UUtilityAIComponent::SelectBestAction()
 		else
 		{
 			bSelectingAction = false;
-			return false;
+			return;
 		}
 		
 	}
@@ -110,7 +162,7 @@ bool UUtilityAIComponent::SelectBestAction()
 	else
 	{
 		bSelectingAction = false;
-		return false;
+		return;
 	}
 	
 	
@@ -125,7 +177,7 @@ bool UUtilityAIComponent::SelectBestAction()
 		CurrentAction->ExecuteAction();
 	}
 
-	return true;
+	return;
 }
 
 bool UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)

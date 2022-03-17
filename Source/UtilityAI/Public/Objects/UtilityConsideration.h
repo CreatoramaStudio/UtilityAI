@@ -27,14 +27,11 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
+	UPROPERTY()
 		UUtilityAIComponent* UtilityAIComponent;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
+	UPROPERTY()
 		AAIController* AIController;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
-		APawn* Pawn;
 
 	float Score;
 
@@ -59,7 +56,16 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		UUtilityAIComponent* GetUtilityAIComponent() const;
+
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		AAIController* GetAIController() const;
+
+	UFUNCTION(BlueprintPure, Category = "Utility AI")
+		APawn* GetPawn() const;
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
 		float ScoreConsideration();
 
 private:

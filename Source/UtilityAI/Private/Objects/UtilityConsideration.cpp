@@ -25,11 +25,6 @@ void UUtilityConsideration::InitializeVariables(UUtilityAIComponent* InUtilityAI
 {
 	UtilityAIComponent = InUtilityAIComponent;
 	AIController = InAIController;
-
-	if (AIController->GetPawn())
-	{
-		Pawn = AIController->GetPawn();
-	}
 }
 
 float UUtilityConsideration::GetScore()
@@ -40,12 +35,28 @@ float UUtilityConsideration::GetScore()
 
 void UUtilityConsideration::Construct_Implementation()
 {
+	return;
 }
 
 float UUtilityConsideration::EvaluateScore()
 {
 	Score = ResponseCurve.GetRichCurve()->Eval(FMath::Clamp(ScoreConsideration(),0.f,1.f));
 	return Score;
+}
+
+UUtilityAIComponent* UUtilityConsideration::GetUtilityAIComponent() const
+{
+	return UtilityAIComponent;
+}
+
+AAIController* UUtilityConsideration::GetAIController() const
+{
+	return AIController;
+}
+
+APawn* UUtilityConsideration::GetPawn() const
+{
+	return AIController->GetPawn();
 }
 
 float UUtilityConsideration::ScoreConsideration_Implementation()

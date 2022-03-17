@@ -25,11 +25,6 @@ void UUtilityAction::InitializeVariables(UUtilityAIComponent* InUtilityAICompone
 {
 	UtilityAIComponent = InUtilityAIComponent;
 	AIController = InAIController;
-
-	if (AIController->GetPawn())
-	{
-		Pawn = AIController->GetPawn();
-	}
 }
 
 void UUtilityAction::CreateConsiderations()
@@ -102,6 +97,21 @@ void UUtilityAction::CancelAction()
 			UtilityAIComponent->SelectBestAction();
 		}
 	}
+}
+
+UUtilityAIComponent* UUtilityAction::GetUtilityAIComponent() const
+{
+	return UtilityAIComponent;
+}
+
+AAIController* UUtilityAction::GetAIController() const
+{
+	return AIController;
+}
+
+APawn* UUtilityAction::GetPawn() const
+{
+	return AIController->GetPawn();
 }
 
 bool UUtilityAction::CanCancelAction_Implementation()

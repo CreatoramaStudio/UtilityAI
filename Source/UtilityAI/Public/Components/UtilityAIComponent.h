@@ -29,22 +29,22 @@ public:
 
 protected:
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 		TArray<UUtilityAction*> Actions;
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 		UUtilityAction* CurrentAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
 		TSet<TSubclassOf<UUtilityAction>> DefaultActionTypes;
 
-	UPROPERTY(EditAnywhere, Category = "Utility AI")
+	UPROPERTY(SaveGame,EditAnywhere, Category = "Utility AI")
 		EUtilityUpdate SelectBestActionUpdateType = EUtilityUpdate::Timer;
 
-	UPROPERTY(EditAnywhere, Category = "Utility AI", meta = (EditCondition = "SelectBestActionUpdateType==EUtilityUpdate::Timer", EditConditionHides))
+	UPROPERTY(SaveGame,EditAnywhere, Category = "Utility AI", meta = (EditCondition = "SelectBestActionUpdateType==EUtilityUpdate::Timer", EditConditionHides))
 		float SelectBestActionTimerRate = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility AI")
+	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadWrite, Category = "Utility AI")
 		bool bRandomActionIfSelectBestActionFails = true;
 
 	UPROPERTY()

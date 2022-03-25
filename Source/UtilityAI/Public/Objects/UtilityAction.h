@@ -24,7 +24,7 @@ public:
 		FGameplayTag ActionTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-		TArray<TSubclassOf<UUtilityConsideration>> ConsiderationTypes;
+		TSet<TSubclassOf<UUtilityConsideration>> ConsiderationTypes;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
 		TArray<UUtilityConsideration*> Considerations;

@@ -113,7 +113,7 @@ void UUtilityAIComponent::CreateDefaultActions()
 {
 	Actions.Empty();
 
-	for (auto ActionType : DefaultActionTypes)
+	for (auto& ActionType : DefaultActionTypes)
 	{
 		AddAction(ActionType);
 	}
@@ -126,7 +126,7 @@ void UUtilityAIComponent::SelectBestAction()
 	float Score = 0;
 	UUtilityAction* BestAction = nullptr;
 
-	for (auto Action : Actions)
+	for (auto& Action : Actions)
 	{
 		if (ScoreAction(Action) > Score)
 		{
@@ -184,7 +184,7 @@ bool UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
 {
 	if (ActionType)
 	{
-		for (auto Action : Actions)
+		for (auto& Action : Actions)
 		{
 			if (Action->GetClass() == ActionType)
 			{
@@ -215,7 +215,7 @@ bool UUtilityAIComponent::RemoveAction(TSubclassOf<UUtilityAction> ActionType)
 		return true;
 	}
 
-	for (auto Action : Actions)
+	for (auto& Action : Actions)
 	{
 		if (Action->GetClass() == ActionType)
 		{
@@ -236,7 +236,7 @@ float UUtilityAIComponent::ScoreAction(UUtilityAction* Action)
 		return Action->GetScore();
 	}
 
-	for (auto Consideration : Action->Considerations)
+	for (auto& Consideration : Action->Considerations)
 	{
 		float ConsiderationScore = Consideration->EvaluateScore();
 		Score *= ConsiderationScore;

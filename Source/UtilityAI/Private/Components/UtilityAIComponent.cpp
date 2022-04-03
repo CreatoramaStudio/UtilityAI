@@ -68,7 +68,7 @@ void UUtilityAIComponent::SetSelectBestActionUpdateType(const EUtilityUpdate Val
 		{
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		}
-
+		
 		SelectBestAction();
 
 		break;
@@ -78,7 +78,7 @@ void UUtilityAIComponent::SetSelectBestActionUpdateType(const EUtilityUpdate Val
 		{
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		}
-
+		
 		SetComponentTickEnabled(true);
 		
 		break;
@@ -90,12 +90,8 @@ void UUtilityAIComponent::SetSelectBestActionUpdateType(const EUtilityUpdate Val
 		{
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UUtilityAIComponent::SelectBestAction, SelectBestActionTimerRate, true,0);
 		}
-
-		break;
-	default:
 		break;
 	}
-
 }
 
 EUtilityUpdate UUtilityAIComponent::GetSelectBestActionUpdateType() const
@@ -130,7 +126,7 @@ void UUtilityAIComponent::SelectBestAction()
 	{
 		const float ActionScore = ScoreAction(Action);
 		
-		FLogUtilityAI::VisLogString(GetOwner(),Action->Name.ToString() + " Score: " + FString::SanitizeFloat(ActionScore));
+		FLogUtilityAI::VisLogString(GetOwner(), "Action: " + Action->GetName() + " Score: " + FString::SanitizeFloat(ActionScore));
 		
 		if (ActionScore > Score)
 		{
@@ -169,7 +165,7 @@ void UUtilityAIComponent::SelectBestAction()
 		return;
 	}
 
-	FLogUtilityAI::VisLogString(GetOwner(),"Current Action: " + CurrentAction->Name.ToString());
+	FLogUtilityAI::VisLogString(GetOwner(),"Current Action: " + CurrentAction->GetName());
 
 	if (OnSelectAction.IsBound())
 	{
@@ -184,7 +180,7 @@ void UUtilityAIComponent::SelectBestAction()
 	return;
 }
 
-bool UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
+bool UUtilityAIComponent::AddAction(const TSubclassOf<UUtilityAction> ActionType)
 {
 	if (ActionType)
 	{
@@ -208,7 +204,7 @@ bool UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
 	return false;
 }
 
-bool UUtilityAIComponent::RemoveAction(TSubclassOf<UUtilityAction> ActionType)
+bool UUtilityAIComponent::RemoveAction(const TSubclassOf<UUtilityAction> ActionType)
 {
 	if (CurrentAction && CurrentAction->GetClass() == ActionType)
 	{
@@ -243,6 +239,9 @@ float UUtilityAIComponent::ScoreAction(UUtilityAction* Action)
 	for (const auto& Consideration : Action->Considerations)
 	{
 		const float ConsiderationScore = Consideration->EvaluateScore();
+
+		FLogUtilityAI::VisLogString(GetOwner(), "Action: " + Action->GetName() + " Consideration: " + Consideration->GetName() + " Score: " + FString::SanitizeFloat(ConsiderationScore));
+		
 		Score *= ConsiderationScore;
 		if (Score == 0)
 		{

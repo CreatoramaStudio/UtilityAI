@@ -3,6 +3,7 @@
 
 #include "Components/UtilityAIComponent.h"
 #include "AIController.h"
+#include "LogUtilityAI.h"
 
 // Sets default values for this component's properties
 UUtilityAIComponent::UUtilityAIComponent()
@@ -11,7 +12,6 @@ UUtilityAIComponent::UUtilityAIComponent()
 	// off to improve performance if you don't need them.
 
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 
@@ -43,7 +43,7 @@ void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	}
 }
 
-TArray<UUtilityAction*> UUtilityAIComponent::GetActions() const
+TSet<UUtilityAction*> UUtilityAIComponent::GetActions() const
 {
 	return Actions;
 }
@@ -53,7 +53,7 @@ UUtilityAction* UUtilityAIComponent::GetCurrentAction() const
 	return CurrentAction;
 }
 
-void UUtilityAIComponent::SetSelectBestActionUpdateType(EUtilityUpdate Value, float TimerRate)
+void UUtilityAIComponent::SetSelectBestActionUpdateType(const EUtilityUpdate Value, const float TimerRate)
 {
 	SelectBestActionUpdateType = Value;
 	SelectBestActionTimerRate = TimerRate;
@@ -98,13 +98,13 @@ void UUtilityAIComponent::SetSelectBestActionUpdateType(EUtilityUpdate Value, fl
 
 }
 
-EUtilityUpdate UUtilityAIComponent::GetSelectBestActionUpdateType()
+EUtilityUpdate UUtilityAIComponent::GetSelectBestActionUpdateType() const
 {
 	return SelectBestActionUpdateType;
 }
 
 
-bool UUtilityAIComponent::IsSelectingAction()
+bool UUtilityAIComponent::IsSelectingAction() const
 {
 	return bSelectingAction;
 }
@@ -113,7 +113,7 @@ void UUtilityAIComponent::CreateDefaultActions()
 {
 	Actions.Empty();
 
-	for (auto& ActionType : DefaultActionTypes)
+	for (const auto& ActionType : DefaultActionTypes)
 	{
 		AddAction(ActionType);
 	}
@@ -126,9 +126,13 @@ void UUtilityAIComponent::SelectBestAction()
 	float Score = 0;
 	UUtilityAction* BestAction = nullptr;
 
-	for (auto& Action : Actions)
+	for (const auto& Action : Actions)
 	{
-		if (ScoreAction(Action) > Score)
+		const float ActionScore = ScoreAction(Action);
+		
+		FLogUtilityAI::VisLogString(GetOwner(),Action->Name.ToString() + " Score: " + FString::SanitizeFloat(ActionScore));
+		
+		if (ActionScore > Score)
 		{
 			BestAction = Action;
 			Score = BestAction->GetScore();
@@ -146,17 +150,17 @@ void UUtilityAIComponent::SelectBestAction()
 			bSelectingAction = false;
 			return;
 		}
-		
 	}
 
 	if (BestAction)
 	{
 		CurrentAction = BestAction;
+		
 		bSelectingAction = false;
 	}
 	else if(bRandomActionIfSelectBestActionFails)
 	{
-		CurrentAction = Actions[FMath::RandRange(0, Actions.Num() - 1)];
+		CurrentAction = Actions.Array()[FMath::RandRange(0, Actions.Num() - 1)];
 		bSelectingAction = false;
 	}
 	else
@@ -164,8 +168,8 @@ void UUtilityAIComponent::SelectBestAction()
 		bSelectingAction = false;
 		return;
 	}
-	
-	
+
+	FLogUtilityAI::VisLogString(GetOwner(),"Current Action: " + CurrentAction->Name.ToString());
 
 	if (OnSelectAction.IsBound())
 	{
@@ -184,7 +188,7 @@ bool UUtilityAIComponent::AddAction(TSubclassOf<UUtilityAction> ActionType)
 {
 	if (ActionType)
 	{
-		for (auto& Action : Actions)
+		for (const auto& Action : Actions)
 		{
 			if (Action->GetClass() == ActionType)
 			{
@@ -215,7 +219,7 @@ bool UUtilityAIComponent::RemoveAction(TSubclassOf<UUtilityAction> ActionType)
 		return true;
 	}
 
-	for (auto& Action : Actions)
+	for (const auto& Action : Actions)
 	{
 		if (Action->GetClass() == ActionType)
 		{
@@ -236,9 +240,9 @@ float UUtilityAIComponent::ScoreAction(UUtilityAction* Action)
 		return Action->GetScore();
 	}
 
-	for (auto& Consideration : Action->Considerations)
+	for (const auto& Consideration : Action->Considerations)
 	{
-		float ConsiderationScore = Consideration->EvaluateScore();
+		const float ConsiderationScore = Consideration->EvaluateScore();
 		Score *= ConsiderationScore;
 		if (Score == 0)
 		{
@@ -248,10 +252,10 @@ float UUtilityAIComponent::ScoreAction(UUtilityAction* Action)
 	}
 
 	// Averaging scheme of overall score
-	float OriginalScore = Score;
-	float ModFactor = 1 - (1 / Action->Considerations.Num());
-	float makeupValue = (1 - OriginalScore) * ModFactor;
-	Action->SetScore(OriginalScore + (makeupValue * OriginalScore));
+	const float OriginalScore = Score;
+	const float ModFactor = 1 - (1 / Action->Considerations.Num());
+	const float MakeupValue = (1 - OriginalScore) * ModFactor;
+	Action->SetScore(OriginalScore + (MakeupValue * OriginalScore));
 
 	return Action->GetScore();
 }

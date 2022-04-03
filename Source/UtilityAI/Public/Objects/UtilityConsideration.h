@@ -19,20 +19,24 @@ class UTILITYAI_API UUtilityConsideration : public UObject
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-	FGameplayTag ConsiderationTag;
+	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
+	FText Name;
 
-	UPROPERTY(EditAnywhere, Category = "Utility AI")
+	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
+	FGameplayTag Tag;
+
+	UPROPERTY(SaveGame,EditAnywhere, Category = "Utility AI")
 	FRuntimeFloatCurve ResponseCurve;
 
 protected:
 
 	UPROPERTY()
-		UUtilityAIComponent* UtilityAIComponent;
+	UUtilityAIComponent* UtilityAIComponent;
 
 	UPROPERTY()
-		AAIController* AIController;
-
+	AAIController* AIController;
+	
+	UPROPERTY(SaveGame)
 	float Score;
 
 private:
@@ -46,10 +50,10 @@ public:
 	void InitializeVariables(UUtilityAIComponent* InUtilityAIComponent, AAIController* InAIController);
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		float GetScore();
+	float GetScore() const;
 
 	UFUNCTION(BlueprintNativeEvent)
-		void Construct();
+	void Construct();
 
 
 	float EvaluateScore();
@@ -57,17 +61,16 @@ public:
 protected:
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		UUtilityAIComponent* GetUtilityAIComponent() const;
+	UUtilityAIComponent* GetUtilityAIComponent() const;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		AAIController* GetAIController() const;
+	AAIController* GetAIController() const;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		APawn* GetPawn() const;
+	APawn* GetPawn() const;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
-		float ScoreConsideration();
+	float ScoreConsideration();
 
 private:
-	
 };

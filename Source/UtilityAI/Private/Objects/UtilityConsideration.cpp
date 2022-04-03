@@ -27,7 +27,7 @@ void UUtilityConsideration::InitializeVariables(UUtilityAIComponent* InUtilityAI
 	AIController = InAIController;
 }
 
-float UUtilityConsideration::GetScore()
+float UUtilityConsideration::GetScore() const
 {
 	return Score;
 }
@@ -35,7 +35,7 @@ float UUtilityConsideration::GetScore()
 
 void UUtilityConsideration::Construct_Implementation()
 {
-	return;
+	
 }
 
 float UUtilityConsideration::EvaluateScore()

@@ -20,25 +20,30 @@ class UTILITYAI_API UUtilityAction : public UObject
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-		FGameplayTag ActionTag;
+	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
+	FText Name;
+
+	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
+	FGameplayTag Tag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-		TSet<TSubclassOf<UUtilityConsideration>> ConsiderationTypes;
+	TSet<TSubclassOf<UUtilityConsideration>> ConsiderationTypes;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Utility AI")
-		TArray<UUtilityConsideration*> Considerations;
+	UPROPERTY(SaveGame,BlueprintReadOnly, Category = "Utility AI")
+	TArray<UUtilityConsideration*> Considerations;
 
 protected:
 
 	UPROPERTY()
-		UUtilityAIComponent* UtilityAIComponent;
+	UUtilityAIComponent* UtilityAIComponent;
 
 	UPROPERTY()
-		AAIController* AIController;
+	AAIController* AIController;
 
+	UPROPERTY(SaveGame)
 	float Score;
 
+	UPROPERTY(SaveGame)
 	bool bExecutingAction;
 
 private:
@@ -54,46 +59,45 @@ public:
 	virtual void CreateConsiderations();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		void SetScore(float Value);
+	void SetScore(float Value);
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		bool IsExecutingAction();
+	bool IsExecutingAction() const;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		float GetScore();
+	float GetScore() const;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
-		void Construct();
+	void Construct();
 
 	void ExecuteAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		void FinishAction();
+	void FinishAction();
 
 	UFUNCTION(BlueprintCallable, Category = "Utility AI")
-		void CancelAction();
+	void CancelAction();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
-		bool CanCancelAction();
+	bool CanCancelAction();
 
 protected:
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		UUtilityAIComponent* GetUtilityAIComponent() const;
+	UUtilityAIComponent* GetUtilityAIComponent() const;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		AAIController* GetAIController() const;
+	AAIController* GetAIController() const;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-		APawn* GetPawn() const;
+	APawn* GetPawn() const;
 
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
-		void StartAction();
+	void StartAction();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Utility AI")
-		void StopAction(bool bCanceled);
+	void StopAction(bool bCanceled);
 
 private:
-
 };

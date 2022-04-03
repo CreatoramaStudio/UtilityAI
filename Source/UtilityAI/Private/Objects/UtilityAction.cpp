@@ -43,17 +43,17 @@ void UUtilityAction::CreateConsiderations()
 	}
 }
 
-void UUtilityAction::SetScore(float Value)
+void UUtilityAction::SetScore(const float Value)
 {
 	Score = FMath::Clamp(Value, 0.f, 1.f);
 }
 
-bool UUtilityAction::IsExecutingAction()
+bool UUtilityAction::IsExecutingAction() const
 {
 	return bExecutingAction;
 }
 
-float UUtilityAction::GetScore()
+float UUtilityAction::GetScore() const
 {
 	return Score;
 }

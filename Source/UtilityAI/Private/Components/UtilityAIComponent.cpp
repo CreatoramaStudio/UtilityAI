@@ -43,9 +43,9 @@ void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	}
 }
 
-TSet<UUtilityAction*> UUtilityAIComponent::GetActions() const
+TArray<UUtilityAction*> UUtilityAIComponent::GetActions() const
 {
-	return TSet<UUtilityAction*>(Actions.Array());
+	return Actions.Array();
 }
 
 UUtilityAction* UUtilityAIComponent::GetCurrentAction() const

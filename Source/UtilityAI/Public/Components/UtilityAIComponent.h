@@ -70,7 +70,7 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
-	TSet<UUtilityAction*> GetActions() const;
+	TArray<UUtilityAction*> GetActions() const;
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
 	UUtilityAction* GetCurrentAction() const;

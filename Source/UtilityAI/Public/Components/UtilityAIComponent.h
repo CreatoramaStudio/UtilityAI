@@ -30,10 +30,10 @@ public:
 protected:
 
 	UPROPERTY(SaveGame)
-	TSet<UUtilityAction*> Actions;
+	TSet<TObjectPtr<UUtilityAction>> Actions;
 
 	UPROPERTY(SaveGame)
-	UUtilityAction* CurrentAction;
+	TObjectPtr<UUtilityAction> CurrentAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
 	TSet<TSubclassOf<UUtilityAction>> DefaultActionTypes;
@@ -47,8 +47,8 @@ protected:
 	UPROPERTY(SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Utility AI")
 	bool bRandomActionIfSelectBestActionFails = true;
 
-	UPROPERTY()
-	AAIController* AIController;
+	UPROPERTY(SaveGame)
+	TObjectPtr<AAIController> AIController;
 
 	UPROPERTY(SaveGame)
 	bool bSelectingAction;
@@ -98,7 +98,7 @@ protected:
 
 	virtual void CreateDefaultActions();
 
-	virtual float ScoreAction(UUtilityAction* Action);
+	virtual float ScoreAction(TObjectPtr<UUtilityAction> Action);
 
 private:
 };

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "GameplayTagContainer.h"
 #include "UtilityConsideration.generated.h"
 
 class UUtilityAIComponent;
@@ -18,23 +17,16 @@ class UTILITYAI_API UUtilityConsideration : public UObject
 	GENERATED_BODY()
 
 public:
-
-	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-	FText Name;
-
-	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-	FGameplayTag Tag;
-
 	UPROPERTY(SaveGame,EditAnywhere, Category = "Utility AI")
 	FRuntimeFloatCurve ResponseCurve;
 
 protected:
 
-	UPROPERTY()
-	UUtilityAIComponent* UtilityAIComponent;
+	UPROPERTY(SaveGame)
+	TObjectPtr<UUtilityAIComponent> UtilityAIComponent;
 
-	UPROPERTY()
-	AAIController* AIController;
+	UPROPERTY(SaveGame)
+	TObjectPtr<AAIController> AIController;
 	
 	UPROPERTY(SaveGame)
 	float Score;
@@ -47,7 +39,7 @@ public:
 
 	virtual UWorld* GetWorld() const override;
 
-	void InitializeVariables(UUtilityAIComponent* InUtilityAIComponent, AAIController* InAIController);
+	void InitializeVariables(TObjectPtr<UUtilityAIComponent> InUtilityAIComponent, TObjectPtr<AAIController> InAIController);
 
 	UFUNCTION(BlueprintPure, Category = "Utility AI")
 	float GetScore() const;

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "GameplayTagContainer.h"
 #include "Objects/UtilityConsideration.h"
 #include "UtilityAction.generated.h"
 
@@ -20,25 +19,19 @@ class UTILITYAI_API UUtilityAction : public UObject
 
 public:
 
-	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-	FText Name;
-
-	UPROPERTY(SaveGame,EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
-	FGameplayTag Tag;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Utility AI")
 	TSet<TSubclassOf<UUtilityConsideration>> ConsiderationTypes;
 
 	UPROPERTY(SaveGame,BlueprintReadOnly, Category = "Utility AI")
-	TArray<UUtilityConsideration*> Considerations;
+	TArray<TObjectPtr<UUtilityConsideration>> Considerations;
 
 protected:
 
-	UPROPERTY()
-	UUtilityAIComponent* UtilityAIComponent;
+	UPROPERTY(SaveGame)
+	TObjectPtr<UUtilityAIComponent> UtilityAIComponent;
 
-	UPROPERTY()
-	AAIController* AIController;
+	UPROPERTY(SaveGame)
+	TObjectPtr<AAIController> AIController;
 
 	UPROPERTY(SaveGame)
 	float Score;
@@ -54,7 +47,7 @@ public:
 
 	virtual UWorld* GetWorld() const override;
 
-	void InitializeVariables(UUtilityAIComponent* InUtilityAIComponent, AAIController* InAIController);
+	void InitializeVariables(TObjectPtr<UUtilityAIComponent> InUtilityAIComponent, TObjectPtr<AAIController> InAIController);
 
 	virtual void CreateConsiderations();
 

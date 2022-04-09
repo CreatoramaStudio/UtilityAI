@@ -21,7 +21,7 @@ UWorld* UUtilityConsideration::GetWorld() const
 	return AIController->GetWorld();
 }
 
-void UUtilityConsideration::InitializeVariables(UUtilityAIComponent* InUtilityAIComponent, AAIController* InAIController)
+void UUtilityConsideration::InitializeVariables(TObjectPtr<UUtilityAIComponent> InUtilityAIComponent, TObjectPtr<AAIController> InAIController)
 {
 	UtilityAIComponent = InUtilityAIComponent;
 	AIController = InAIController;

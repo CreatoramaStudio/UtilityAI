@@ -21,7 +21,7 @@ UWorld* UUtilityAction::GetWorld() const
 	return AIController->GetWorld();
 }
 
-void UUtilityAction::InitializeVariables(UUtilityAIComponent* InUtilityAIComponent, AAIController* InAIController)
+void UUtilityAction::InitializeVariables(TObjectPtr<UUtilityAIComponent> InUtilityAIComponent, TObjectPtr<AAIController> InAIController)
 {
 	UtilityAIComponent = InUtilityAIComponent;
 	AIController = InAIController;
@@ -31,11 +31,11 @@ void UUtilityAction::CreateConsiderations()
 {
 	Considerations.Empty();
 
-	for (auto ConsiderationType : ConsiderationTypes)
+	for (const auto& ConsiderationType : ConsiderationTypes)
 	{
 		if (ConsiderationType)
 		{
-			UUtilityConsideration* Consideration = NewObject<UUtilityConsideration>(UtilityAIComponent, ConsiderationType);
+			TObjectPtr<UUtilityConsideration> Consideration = NewObject<UUtilityConsideration>(UtilityAIComponent, ConsiderationType);
 			Considerations.Add(Consideration);
 			Consideration->InitializeVariables(UtilityAIComponent, AIController);
 			Consideration->Construct();
@@ -60,7 +60,6 @@ float UUtilityAction::GetScore() const
 
 void UUtilityAction::Construct_Implementation()
 {
-	return;
 }
 
 void UUtilityAction::ExecuteAction()
@@ -121,7 +120,6 @@ bool UUtilityAction::CanCancelAction_Implementation()
 
 void UUtilityAction::StartAction_Implementation()
 {
-
 }
 
 void UUtilityAction::StopAction_Implementation(bool bCanceled)

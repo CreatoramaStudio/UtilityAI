@@ -45,7 +45,7 @@ void UUtilityAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 TSet<UUtilityAction*> UUtilityAIComponent::GetActions() const
 {
-	return Actions;
+	return TSet<UUtilityAction*>(Actions.Array());
 }
 
 UUtilityAction* UUtilityAIComponent::GetCurrentAction() const
@@ -99,7 +99,6 @@ EUtilityUpdate UUtilityAIComponent::GetSelectBestActionUpdateType() const
 	return SelectBestActionUpdateType;
 }
 
-
 bool UUtilityAIComponent::IsSelectingAction() const
 {
 	return bSelectingAction;
@@ -120,7 +119,7 @@ void UUtilityAIComponent::SelectBestAction()
 	bSelectingAction = true;
 
 	float Score = 0;
-	UUtilityAction* BestAction = nullptr;
+	TObjectPtr<UUtilityAction> BestAction = nullptr;
 
 	for (const auto& Action : Actions)
 	{
@@ -176,8 +175,6 @@ void UUtilityAIComponent::SelectBestAction()
 	{
 		CurrentAction->ExecuteAction();
 	}
-
-	return;
 }
 
 bool UUtilityAIComponent::AddAction(const TSubclassOf<UUtilityAction> ActionType)
@@ -192,7 +189,7 @@ bool UUtilityAIComponent::AddAction(const TSubclassOf<UUtilityAction> ActionType
 			}
 		}
 
-		UUtilityAction* Action = NewObject<UUtilityAction>(AIController, ActionType);
+		const TObjectPtr<UUtilityAction> Action = NewObject<UUtilityAction>(AIController, ActionType);
 		Actions.Add(Action);
 		Action->InitializeVariables(this, AIController);
 		Action->CreateConsiderations();
@@ -227,7 +224,7 @@ bool UUtilityAIComponent::RemoveAction(const TSubclassOf<UUtilityAction> ActionT
 	return false;
 }
 
-float UUtilityAIComponent::ScoreAction(UUtilityAction* Action)
+float UUtilityAIComponent::ScoreAction(TObjectPtr<UUtilityAction> Action)
 {
 	float Score = 1;
 
